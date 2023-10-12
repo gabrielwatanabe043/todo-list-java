@@ -1,5 +1,6 @@
 package com.gabriel.todolist.controller;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.gabriel.todolist.model.User;
 import com.gabriel.todolist.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,10 @@ public class UserController {
     public ResponseEntity<Object> getAllUsers(@RequestBody User user){
         var userReponse = this.userRepository.findByUsername(user.getUsername());
         if(userReponse == null) {
+            var passwordHash = BCrypt.withDefaults().hashToString(12,user.getPassword().toCharArray());
+            user.setPassword(passwordHash);
             var useCreated = userRepository.save(user);
+
             return ResponseEntity.status(HttpStatus.OK).body(useCreated);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já existe");
