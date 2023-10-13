@@ -3,6 +3,7 @@ package com.gabriel.todolist.controller;
 import com.gabriel.todolist.model.Task;
 import com.gabriel.todolist.model.User;
 import com.gabriel.todolist.repositories.TaskReposiroty;
+import com.gabriel.todolist.utils.Utils;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +53,11 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable UUID id, @RequestBody Task task, HttpServletRequest request){
+    public ResponseEntity<Task> updateTask(@PathVariable UUID id, @RequestBody Task taskRequest, HttpServletRequest request){
         var idUser = request.getAttribute("idUser");
-        task.setIdUser((UUID) idUser);
-        task.setId(id);
-        var taskResponse = taskReposiroty.save(task);
-        return ResponseEntity.status(HttpStatus.OK).body(taskResponse);
+        var task = taskReposiroty.findById(id).orElse(null);
+        Utils.copyNonNullProperties(taskRequest, task);
+        return ResponseEntity.status(HttpStatus.OK).body(task);
 
     }
 }
