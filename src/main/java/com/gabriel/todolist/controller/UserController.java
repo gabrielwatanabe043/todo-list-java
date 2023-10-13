@@ -24,7 +24,7 @@ public class UserController {
         return ResponseEntity.ok().body(users);
     }
     @PostMapping
-    public ResponseEntity<Object> getAllUsers(@RequestBody User user){
+    public ResponseEntity<Object> createUsers(@RequestBody User user){
         var userReponse = this.userRepository.findByUsername(user.getUsername());
         if(userReponse == null) {
             var passwordHash = BCrypt.withDefaults().hashToString(12,user.getPassword().toCharArray());
